@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="author" content="Wanderley Lopes Batista">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Completa</title>
+
+<style>
+body {
+  background-color: rgb(36, 38, 39);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.calculadora {
+  background-color: #428582;
+  padding: 20px;
+  border-radius: 25px;
+  width: 360px;
+  box-shadow: 0 0 25px #222;
+  font-style: italic;
+}
+
+h1 { 
+  color: rgb(56, 52, 52); 
+  text-align: center;
+}
+
+#visor {
+  width: 70%;
+  height: 55px;
+  font-size: 26px;
+  text-align: right;
+  border-radius: 10px;
+  border: none;
+  padding: 10px;
+  background-color: #bcc4c0;
+  color: black;
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+}
+
+.teclados {
+  flex: 2;
+}
+
+.teclado, .cientifica, .financeira, .utilidades {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  height: 55px;
+  font-size: 15px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.operador { background: rgb(155, 195, 225); }
+.limpar { background: #c0d9eb; color: white; }
+.igual { background: #b3e0f5; }
+.zero { grid-column: span 2; border-radius: 30px; }
+.grande { grid-column: span 4; border-radius: 15px; }
+
+.cientifica, .financeira, .utilidades {
+  display: none;
+}
+
+.historico {
+  background: #5f5d5d;
+  color: rgb(41, 25, 10);
+  height: 90px;
+  overflow-y: auto;
+  font-size: 14px;
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+/* LANDSCAPE */
+@media (orientation: landscape) {
+
+  .calculadora {
+    width: 95vw;
+    max-width: 950px;
+  }
+
+  .conteudo {
+    flex-direction: row;
+    gap: 15px;
+    margin-top: 10px;
+  }
+
+  .teclados {
+    flex: 3;
+  }
+
+  .teclado, .cientifica, .financeira, .utilidades {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .btn {
+    height: 50px;
+    font-size: 14px;
+  }
+
+  .historico {
+    flex: 1;
+    height: auto;
+    max-height: 300px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculadora">
+<h1>Calculadora</h1>
+
+<input type="text" id="visor" value="0" readonly>
+
+<div class="conteudo">
+<div class="teclados">
+
+<!-- Básica -->
+<div class="teclado">
+  <button onclick="alternarCientifica()" class="btn operador">SCI</button>
+  <button onclick="alternarFinanceira()" class="btn operador">FIN</button>
+  <button onclick="alternarUtilidades()" class="btn operador">UTIL</button>
+  <button onclick="apagarUm()" class="btn operador">⌫</button>
+
+  <button onclick="limpar()" class="btn limpar">C</button>
+  <button onclick="digitar('7')" class="btn">7</button>
+  <button onclick="digitar('8')" class="btn">8</button>
+  <button onclick="digitar('9')" class="btn">9</button>
+
+  <button onclick="digitar('/')" class="btn operador">÷</button>
+  <button onclick="digitar('4')" class="btn">4</button>
+  <button onclick="digitar('5')" class="btn">5</button>
+  <button onclick="digitar('6')" class="btn">6</button>
+
+  <button onclick="digitar('*')" class="btn operador">×</button>
+  <button onclick="digitar('1')" class="btn">1</button>
+  <button onclick="digitar('2')" class="btn">2</button>
+  <button onclick="digitar('3')" class="btn">3</button>
+
+  <button onclick="digitar('-')" class="btn operador">−</button>
+  <button onclick="digitar('0')" class="btn zero">0</button>
+  <button onclick="digitar('.')" class="btn">.</button>
+  <button onclick="digitar('+')" class="btn operador">+</button>
+
+  <button onclick="calcular()" class="btn igual grande">=</button>
+</div>
+
+<!-- Científica -->
+<div class="cientifica" id="cientifica">
+  <button onclick="digitar('√')" class="btn operador">√</button>
+  <button onclick="digitar('**2')" class="btn operador">x²</button>
+  <button onclick="digitar('**3')" class="btn operador">x³</button>
+  <button onclick="digitar('1/')" class="btn operador">1/x</button>
+  <button onclick="digitarFunc('Math.sin')">sin</button>
+  <button onclick="digitarFunc('Math.cos')">cos</button>
+  <button onclick="digitarFunc('Math.tan')">tan</button>
+  <button onclick="digitarFunc('Math.log10')">log</button>
+  <button onclick="digitarFunc('Math.log')">ln</button>
+  <button onclick="digitar('Math.PI')">π</button>
+</div>
+
+<!-- Financeira -->
+<div class="financeira" id="financeira">
+  <button onclick="jurosSimples()" class="btn operador">JS</button>
+  <button onclick="jurosCompostos()" class="btn operador">JC</button>
+  <button onclick="valorFuturo()" class="btn operador">FV</button>
+  <button onclick="valorPresente()" class="btn operador">PV</button>
+  <button onclick="parcela()" class="btn operador">PMT</button>
+</div>
+
+<!-- Utilidades -->
+<div class="utilidades" id="utilidades">
+  <button onclick="celsiusParaF()" class="btn operador">°C→°F</button>
+  <button onclick="fParaCelsius()" class="btn operador">°F→°C</button>
+  <button onclick="areaQuadrado()" class="btn operador">Área Q</button>
+  <button onclick="areaRetangulo()" class="btn operador">Área R</button>
+  <button onclick="realParaDolar()" class="btn operador">R$→US$</button>
+</div>
+
+</div>
+
+<div class="historico" id="historico"></div>
+</div>
+</div>
+
+<script>
+const visor = document.getElementById("visor");
+const historico = document.getElementById("historico");
+const cotacaoDolar = 5.00;
+
+function digitar(v) {
+  visor.value = visor.value === "0" ? v : visor.value + v;
+}
+
+function limpar() { visor.value = "0"; }
+
+function apagarUm() {
+  let valor = visor.value;
+  if (valor.endsWith("Math.sqrt(")) {
+    visor.value = valor.slice(0, -10);
+  } else if (valor.length > 1) {
+    visor.value = valor.slice(0, -1);
+  } else {
+    visor.value = "0";
+  }
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Backspace") apagarUm();
+  if (e.key === "Enter") calcular();
+});
+
+// ------------------ CALCULAR ------------------
+function calcular() {
+  try {
+    let exp = visor.value;
+
+    // Substitui √ seguido de número por Math.sqrt(numero)
+    exp = exp.replace(/√(\d+(\.\d+)?)/g, "Math.sqrt($1)");
+
+    // Substitui outros símbolos
+    exp = exp
+      .replace(/÷/g, "/")
+      .replace(/×/g, "*")
+      .replace(/−/g, "-");
+
+    // Avalia a expressão
+    let resultado = eval(exp);
+
+    visor.value = resultado;
+    historico.innerHTML += exp + " = " + resultado + "<br>";
+    historico.scrollTop = historico.scrollHeight;
+  } catch {
+    visor.value = "Erro";
+  }
+}
+// 1/x avaliado corretamente
+
+    let resultado = eval(exp);
+
+    visor.value = resultado;
+    historico.innerHTML += exp + " = " + resultado + "<br>";
+    historico.scrollTop = historico.scrollHeight;
+
+// ------------------ Científica ------------------
+function digitarFunc(funcao) {
+  visor.value = funcao + "(" + visor.value + ")";
+}
+
+// ------------------ Financeira ------------------
+function jurosSimples(){
+  let c = prompt("Capital:");
+  let i = prompt("Taxa %:")/100;
+  let t = prompt("Tempo:");
+  visor.value = (c*i*t).toFixed(2);
+}
+function jurosCompostos(){
+  let c = prompt("Capital:");
+  let i = prompt("Taxa %:")/100;
+  let t = prompt("Tempo:");
+  visor.value = (c*Math.pow(1+i,t)).toFixed(2);
+}
+function valorFuturo(){
+  let pv = prompt("Valor Presente:");
+  let i = prompt("Taxa %:")/100;
+  let t = prompt("Períodos:");
+  visor.value = (pv*Math.pow(1+i,t)).toFixed(2);
+}
+function valorPresente(){
+  let fv = prompt("Valor Futuro:");
+  let i = prompt("Taxa %:")/100;
+  let t = prompt("Períodos:");
+  visor.value = (fv/Math.pow(1+i,t)).toFixed(2);
+}
+function parcela(){
+  let pv = prompt("Valor:");
+  let i = prompt("Taxa %:")/100;
+  let n = prompt("Parcelas:");
+  visor.value = (pv*(i/(1-Math.pow(1+i,-n)))).toFixed(2);
+}
+
+// ------------------ Utilidades ------------------
+function celsiusParaF(){ visor.value = (prompt("°C:")*9/5+32).toFixed(2); }
+function fParaCelsius(){ visor.value = ((prompt("°F:")-32)*5/9).toFixed(2); }
+function areaQuadrado(){ let l=prompt("Lado:"); visor.value=(l*l).toFixed(2); }
+function areaRetangulo(){ let b=prompt("Base:"), h=prompt("Altura:"); visor.value=(b*h).toFixed(2); }
+function realParaDolar(){ visor.value=(prompt("R$:")/cotacaoDolar).toFixed(2); }
+
+// ------------------ Alternar abas ------------------
+function alternarCientifica(){ toggle("cientifica"); }
+function alternarFinanceira(){ toggle("financeira"); }
+function alternarUtilidades(){ toggle("utilidades"); }
+function toggle(id){
+  const el=document.getElementById(id);
+  el.style.display = el.style.display==="grid" ? "none" : "grid";
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+

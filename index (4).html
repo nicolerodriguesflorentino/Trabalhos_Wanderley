@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetCare | Pet Shop & Clínica Veterinária</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#f4f7fb;color:#333;line-height:1.6;}
+header{background:#2a9d8f;padding:15px 0;position:sticky;top:0;}
+nav{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;}
+nav ul{display:flex;gap:20px;list-style:none;}
+nav a{color:white;text-decoration:none;font-weight:bold;}
+.logo{color:white;font-size:22px;font-weight:bold;}
+
+.section{
+  max-width:1100px;margin:30px auto;padding:20px;
+  background:white;border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+h2{color:#2a9d8f;margin-bottom:10px;}
+
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px;border-bottom:1px solid #ddd;}
+th{background:#2a9d8f;color:white;}
+
+form{display:flex;flex-direction:column;gap:10px;}
+input,select,textarea{
+  padding:10px;border-radius:6px;border:1px solid #ccc;
+}
+
+button{
+  background:#e76f51;color:white;border:none;
+  padding:12px;border-radius:6px;font-size:16px;
+  cursor:pointer;
+}
+button:hover{background:#d65a3f;}
+
+#comprovante{
+  display:none;margin-top:20px;padding:20px;
+  border:2px dashed #2a9d8f;border-radius:10px;
+}
+
+.lista{margin-top:20px;}
+.item-agenda{border-bottom:1px solid #ddd;padding:8px 0;}
+
+footer{
+  text-align:center;padding:20px;background:#264653;color:white;margin-top:40px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<nav>
+<div class="logo">🐾 PetCare</div>
+<ul>
+<li><a href="#sobre">Sobre</a></li>
+<li><a href="#servicos">Preços</a></li>
+<li><a href="#funcionamento">Funcionamento</a></li>
+<li><a href="#agendamento">Agendamento</a></li>
+<li><a href="#lista">Agendamentos</a></li>
+</ul>
+</nav>
+</header>
+
+<!-- SOBRE -->
+<section id="sobre" class="section">
+<h2>Sobre Nós</h2>
+<p>
+A <strong>PetCare</strong> é um Pet Shop e Clínica Veterinária dedicada ao bem-estar dos animais.
+Oferecemos atendimento veterinário completo, banho e tosa, vacinação e produtos
+de alta qualidade para seu melhor amigo.
+</p>
+</section>
+
+<!-- SERVIÇOS -->
+<section id="servicos" class="section">
+<h2>Serviços e Preços</h2>
+<table>
+<tr><th>Serviço</th><th>Descrição</th><th>Preço</th></tr>
+<tr><td>Consulta</td><td>Avaliação veterinária</td><td>R$ 80</td></tr>
+<tr><td>Vacinação</td><td>Proteção contra doenças</td><td>R$ 60</td></tr>
+<tr><td>Banho e Tosa</td><td>Higiene completa</td><td>R$ 70</td></tr>
+<tr><td>Exames</td><td>Diagnóstico preciso</td><td>R$ 120</td></tr>
+</table>
+</section>
+
+<!-- FUNCIONAMENTO -->
+<section id="funcionamento" class="section">
+<h2>Horário de Funcionamento</h2>
+<p><strong>Segunda a Sexta:</strong> 08:00 às 18:00</p>
+<p><strong>Sábado:</strong> 08:00 às 13:00</p>
+<p><strong>Domingo:</strong> Fechado</p>
+</section>
+
+<!-- AGENDAMENTO -->
+<section id="agendamento" class="section">
+<h2>Agendar Atendimento</h2>
+
+<form id="formAgendamento">
+<input type="text" id="tutor" placeholder="Nome do Tutor" required>
+<input type="text" id="pet" placeholder="Nome do Pet" required>
+
+<select id="especie" required>
+<option value="">Espécie</option>
+<option>Cachorro</option>
+<option>Gato</option>
+</select>
+
+<input type="text" id="raca" placeholder="Raça" required>
+
+<select id="servico" required>
+<option value="">Serviço</option>
+<option>Consulta</option>
+<option>Vacinação</option>
+<option>Banho e Tosa</option>
+<option>Exames</option>
+</select>
+
+<input type="date" id="data" required>
+<input type="time" id="hora" required>
+
+<textarea id="obs" placeholder="Observações"></textarea>
+
+<button type="submit">Agendar</button>
+</form>
+
+<div id="comprovante"></div>
+</section>
+
+<!-- LISTA -->
+<section id="lista" class="section">
+<h2>Agendamentos Salvos</h2>
+<div id="listaAgendamentos" class="lista"></div>
+</section>
+
+<footer>
+<p>© 2026 PetCare - Pet Shop & Clínica Veterinária</p>
+</footer>
+
+<script>
+const form = document.getElementById("formAgendamento");
+const comprovante = document.getElementById("comprovante");
+const lista = document.getElementById("listaAgendamentos");
+
+function carregarAgendamentos(){
+  const dados = JSON.parse(localStorage.getItem("agendamentos")) || [];
+  lista.innerHTML = "";
+  dados.forEach(item=>{
+    lista.innerHTML += `
+      <div class="item-agenda">
+        📅 ${item.data} ${item.hora} - ${item.pet} (${item.especie}) - ${item.servico}
+      </div>
+    `;
+  });
+}
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const protocolo = "PC" + Math.floor(Math.random()*100000);
+
+  const dados = {
+    protocolo,
+    tutor: tutor.value,
+    pet: pet.value,
+    especie: especie.value,
+    raca: raca.value,
+    servico: servico.value,
+    data: data.value,
+    hora: hora.value,
+    obs: obs.value
+  };
+
+  const listaDados = JSON.parse(localStorage.getItem("agendamentos")) || [];
+  listaDados.push(dados);
+  localStorage.setItem("agendamentos", JSON.stringify(listaDados));
+  carregarAgendamentos();
+
+  comprovante.style.display = "block";
+  comprovante.innerHTML = `
+    <h3>✔ Agendamento Confirmado</h3>
+    <p><strong>Protocolo:</strong> ${protocolo}</p>
+    <p><strong>Tutor:</strong> ${dados.tutor}</p>
+    <p><strong>Pet:</strong> ${dados.pet}</p>
+    <p><strong>Espécie:</strong> ${dados.especie}</p>
+    <p><strong>Raça:</strong> ${dados.raca}</p>
+    <p><strong>Serviço:</strong> ${dados.servico}</p>
+    <p><strong>Data:</strong> ${dados.data} às ${dados.hora}</p>
+    <button onclick="window.print()">🖨️ Imprimir</button>
+    <br><br>
+    <a href="https://wa.me/?text=Agendamento%20PetCare%0AProtocolo:%20${protocolo}%0ATutor:%20${dados.tutor}%0APet:%20${dados.pet}%0AData:%20${dados.data}%20${dados.hora}" target="_blank">
+      📲 Enviar para WhatsApp
+    </a>
+  `;
+
+  form.reset();
+});
+
+carregarAgendamentos();
+</script>
+
+</body>
+</html>
